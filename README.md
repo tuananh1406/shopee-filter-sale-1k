@@ -1,4 +1,6 @@
-# Filter sale 1K gần bạn
+# Auto filter sale 1K gần bạn
+## Project fork lại của 1 bạn trên facebook
+Info: https://github.com/KangHidro/shopee-filter-sale-1k
 
 ## Tại sao lại có cái này?
 
