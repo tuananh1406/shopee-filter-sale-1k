@@ -121,14 +121,40 @@ def lay_sales(driver, url):
         by='xpath',
         value=xpath_khung_gio,
     )
+    list_promotion_id = []
+    stt = 1
     for khung_gio in danh_sach_khung_gio:
-        LOGGER.info(khung_gio.text)
+        label = khung_gio.text
+        label = label.replace('\n', ' - ')
+        label = str(stt) + ': ' + label
+        LOGGER.info(label)
         duong_dan = khung_gio.find_element(
             by='xpath',
             value='.//a',
         ).get_attribute('href')
         LOGGER.info(duong_dan)
+        list_promotion_id.append([label, duong_dan.split('=')[-1]])
+        stt += 1
 
+    lua_chon = int(input('Nhập khung giờ muốn lấy: '))
+    LOGGER.info(list_promotion_id[lua_chon - 1])
+
+    # Đọc tệp js
+    with open('script.js', 'r') as tep_js:
+        promoId = list_promotion_id[lua_chon - 1][-1]
+        catId = 12
+        filterLocation = 'TP. Hồ Chí Minh'
+        script = tep_js.read()
+        script = script % (
+            promoId,
+            catId,
+            filterLocation,
+        )
+
+    # Chạy script
+    LOGGER.info(script)
+    result = driver.execute_script(script)
+    LOGGER.info(result)
     return driver
 
 

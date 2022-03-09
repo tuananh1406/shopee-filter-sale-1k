@@ -1,6 +1,6 @@
-promoId = %s;
-catId = %s;
-filterLocation = '%s';
+promoId = 2040022503;
+catId = 12;
+filterLocation = 'TP. Hồ Chí Minh';
 itemInfo = [];
 
 function getInfo(itemId) {
@@ -79,6 +79,3 @@ res.data.item_brief_list
 .forEach(id => getInfo(id))
 );
 
-
-// Chờ từ 3-5s để các request done hết, sau đó gõ vào Console:
-// copyl(itemInfo.join("\n\n"))
