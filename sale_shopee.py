@@ -6,6 +6,7 @@ import os
 import pickle
 import logging
 import re
+import json
 
 from datetime import datetime
 from time import sleep
@@ -136,24 +137,68 @@ def lay_sales(driver, url):
         list_promotion_id.append([label, duong_dan.split('=')[-1]])
         stt += 1
 
-    lua_chon = int(input('Nhập khung giờ muốn lấy: '))
+    # lua_chon = int(input('Nhập khung giờ muốn lấy: '))
+    lua_chon = 2
+    promotion_id = list_promotion_id[lua_chon - 1]
     LOGGER.info(list_promotion_id[lua_chon - 1])
+
+    url_lay_tat_ca = 'https://shopee.vn/api/v2/flash_sale/get_all_itemids' \
+        f'?need_personalize=true&promotionid={promotion_id}&sort_soldout=true'
+    url_thong_tin_shop = 'https://shopee.vn/api/v4/product/get_shop_info?' \
+        f'shopid={shop_id}'
+    shop_id = 131666219
+
+    script_lay_item = r'''
+    promoId = %s;
+    catId = %s;
+    filterLocation = '%s';
+    itemId = %s;
+    return fetch(
+    "https://shopee.vn/api/v2/flash_sale/flash_sale_batch_get_items", {
+      "headers": {
+        "accept": "application/json",
+        "accept-language": "vi",
+        "content-type": "application/json",
+        "if-none-match-": "55b03-c9b9fb25684b2b06733c64898f2b3197",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "x-api-source": "rweb",
+        "x-csrftoken": "A0O24HgbOXbamkLtd1BV8OVFrcXOwzjY",
+        "x-kl-ajax-request": "Ajax_Request",
+        "x-requested-with": "XMLHttpRequest",
+        "x-shopee-language": "vi"
+      },
+      "referrer": "https://shopee.vn/flash_sale?categoryId="+catId+"&promotionId="+promoId,
+      "referrerPolicy": "no-referrer-when-downgrade",
+      "body": "{\"promotionid\":"+promoId+",\"categoryid\":"+catId+",\"itemids\":["+itemId+"],\"sort_soldout\":false,\"limit\":1,\"need_personalize\":true,\"with_dp_items\":true}",
+      "method": "POST",
+      "mode": "cors",
+      "credentials": "include"
+    }).then(res => res.json());
+    '''
 
     # Đọc tệp js
     with open('script.js', 'r') as tep_js:
         promoId = list_promotion_id[lua_chon - 1][-1]
         catId = 12
         filterLocation = 'TP. Hồ Chí Minh'
+        itemId = 11009435571
         script = tep_js.read()
         script = script % (
             promoId,
             catId,
             filterLocation,
         )
+    LOGGER.info(script)
 
     # Chạy script
-    LOGGER.info(script)
-    result = driver.execute_script(script)
+    result = driver.execute_script(script_lay_item % (
+            promoId,
+            catId,
+            filterLocation,
+            itemId,
+    ))
     LOGGER.info(result)
     return driver
 
