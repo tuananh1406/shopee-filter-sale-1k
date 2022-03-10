@@ -235,11 +235,11 @@ def lay_sales(driver, url):
         shop_id = thong_tin_san_pham.get('shopid')
         url_thong_tin_shop = 'https://shopee.vn/api/v4/product/get_shop_info?' \
             f'shopid={shop_id}'
-        response = requests.get(url_thong_tin_shop)
-        response = json.loads(response.content.decode('utf-8'))
+        raw_response = requests.get(url_thong_tin_shop)
+        response = json.loads(raw_response.content.decode('utf-8'))
         thong_tin_shop = response.get('data')
         if thong_tin_shop is None:
-            LOGGER.info(response.url)
+            LOGGER.info(raw_response.url)
             continue
         dia_chi = thong_tin_shop.get('place')
         # Kiểm tra location có trong địa chỉ thì lấy ra
