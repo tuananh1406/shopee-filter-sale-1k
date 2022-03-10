@@ -220,13 +220,13 @@ def lay_sales(driver, url):
     LOGGER.info('Lấy thông tin các sản phẩm')
     for itemId in danh_sach_san_pham_id:
         # Lấy thông tin sản phẩm
-        script_lay_item = script_header % (
+        script = script_header % (
             promotion_id,
             category_id,
             filterLocation,
             itemId,
         ) + script_lay_item
-        thong_tin_san_pham = driver.execute_script(script_lay_item)
+        thong_tin_san_pham = driver.execute_script(script)
         thong_tin_san_pham = thong_tin_san_pham.get('data').get('items')[0]
         ten_san_pham = thong_tin_san_pham.get('name')
         dang_giam_gia = thong_tin_san_pham.get('discount')
@@ -242,7 +242,7 @@ def lay_sales(driver, url):
         # Kiểm tra location có trong địa chỉ thì lấy ra
         if filterLocation.lower() in dia_chi.lower():
             # Tạo đường dẫn sản phẩm và thêm vào danh sách
-            url_san_pham = 'https://shopee.vn/--i.{shop_id}.{itemId}'
+            url_san_pham = f'https://shopee.vn/--i.{shop_id}.{itemId}'
             danh_sach_san_pham_o_gan.append([
                 ten_san_pham,
                 dang_giam_gia,
