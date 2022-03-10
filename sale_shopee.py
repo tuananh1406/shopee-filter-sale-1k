@@ -116,7 +116,7 @@ def lay_sales(driver, url):
     filterLocation = input('Nhập vị trí muốn tìm: ')
 
     # Mở trang flash sale
-    LOGGER.info('Lấy thông tin sales theo vị trí')
+    LOGGER.info('Lấy thông tin sales theo vị trí: %s', filterLocation)
     driver.get(url)
 
     # Lấy các khung giờ có sale
@@ -142,6 +142,7 @@ def lay_sales(driver, url):
         stt += 1
 
     lua_chon = int(input('Nhập khung giờ muốn lấy: '))
+    LOGGER.info('Đã lựa chọn: %s', list_promotion_id[lua_chon - 1][0])
     promotion_id = list_promotion_id[lua_chon - 1][-1]
 
     # Lấy category
@@ -176,6 +177,7 @@ def lay_sales(driver, url):
     )
     stt = 1
     list_category_id = []
+    list_label = []
     for category in danh_sach_cate:
         ten_cate = category.text
         label = str(stt) + ': ' + ten_cate
@@ -183,11 +185,12 @@ def lay_sales(driver, url):
         duong_dan = category.get_attribute('href')
         category_id = re.search("(?<=categoryId=)\d+", duong_dan).group()
         list_category_id.append(category_id)
+        list_label.append(label)
         stt += 1
 
     lua_chon_cate = int(input('Nhập danh mục muốn lấy: '))
+    LOGGER.info('Đã lựa chọn danh mục: %s', list_label[lua_chon_cate - 1])
     category_id = list_category_id[lua_chon_cate - 1]
-    LOGGER.info(category_id)
 
     # Lấy các sản phẩm đang sale tương ứng
     url_lay_tat_ca = 'https://shopee.vn/api/v2/flash_sale/get_all_itemids' \
@@ -214,14 +217,8 @@ def lay_sales(driver, url):
     # Lấy danh sách sản phẩm ở khu vực cần tìm
     danh_sach_san_pham_o_gan = []
 
+    LOGGER.info('Lấy thông tin các sản phẩm')
     for itemId in danh_sach_san_pham_id:
-        LOGGER.info(
-            '%s - %s - %s - %s',
-            promotion_id,
-            category_id,
-            filterLocation,
-            itemId,
-        )
         # Lấy thông tin sản phẩm
         script_lay_item = script_header % (
             promotion_id,
@@ -250,6 +247,15 @@ def lay_sales(driver, url):
                 ten_san_pham,
                 dang_giam_gia,
                 url_san_pham])
+
+    # Hiển thị sản phẩm tìm được
+    LOGGER.info(
+        'Tìm thấy %d sản phẩm ở %s',
+        len(danh_sach_san_pham_o_gan),
+        filterLocation,
+    )
+    for san_pham in danh_sach_san_pham_o_gan:
+        LOGGER.info(' - '.join(san_pham))
     return driver
 
 
