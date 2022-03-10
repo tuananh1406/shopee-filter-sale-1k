@@ -113,8 +113,13 @@ def chay_trinh_duyet(headless=True):
 
 
 def lay_sales(driver, url):
+    filterLocation = input('Nhập vị trí muốn tìm: ')
+
+    # Mở trang flash sale
     LOGGER.info('Lấy thông tin sales theo vị trí')
     driver.get(url)
+
+    # Lấy các khung giờ có sale
     xpath_khung_gio = '/html/body/div[1]/div/div[3]/div/div/div/div[3]/div/' \
         'div/div[1]/ul/li'
     tam_ngung_den_khi(driver, xpath_khung_gio)
@@ -133,73 +138,118 @@ def lay_sales(driver, url):
             by='xpath',
             value='.//a',
         ).get_attribute('href')
-        LOGGER.info(duong_dan)
         list_promotion_id.append([label, duong_dan.split('=')[-1]])
         stt += 1
 
-    # lua_chon = int(input('Nhập khung giờ muốn lấy: '))
-    lua_chon = 2
-    promotion_id = list_promotion_id[lua_chon - 1]
-    LOGGER.info(list_promotion_id[lua_chon - 1])
+    lua_chon = int(input('Nhập khung giờ muốn lấy: '))
+    promotion_id = list_promotion_id[lua_chon - 1][-1]
 
+    # Lấy category
+    xpath_khung_cate= '/html/body/div[1]/div/div[3]/div/div/div/div[6]/div[1]'
+    khung_cate = driver.find_element(
+        by='xpath',
+        value=xpath_khung_cate,
+    )
+    danh_sach_cate = khung_cate.find_elements(
+        by='xpath',
+        value='.//a',
+    )
+    xpath_nut_them = '/html/body/div[1]/div/div[3]/div/div/div/div[6]/div[1]/' \
+        'div/div/div/div[1]'
+    nut_them = driver.find_element(
+        by='xpath',
+        value=xpath_nut_them,
+    )
+    LOGGER.info('click nút thêm')
+    nut_them.click()
+    nut_them.click()
+    LOGGER.info('lấy nút thêm')
+    xpath_khung_cate_them = '/html/body/div[1]/div/div[3]/div/div/div/div[6]' \
+        '/div[1]/div/div/div/div[2]/div/div/div/div'
+    khung_cate_them = driver.find_element(
+        by='xpath',
+        value=xpath_khung_cate_them,
+    )
+    danh_sach_cate += khung_cate_them.find_elements(
+        by='xpath',
+        value='.//a',
+    )
+    stt = 1
+    list_category_id = []
+    for category in danh_sach_cate:
+        ten_cate = category.text
+        label = str(stt) + ': ' + ten_cate
+        LOGGER.info(label)
+        duong_dan = category.get_attribute('href')
+        category_id = re.search("(?<=categoryId=)\d+", duong_dan).group()
+        list_category_id.append(category_id)
+        stt += 1
+
+    lua_chon_cate = int(input('Nhập danh mục muốn lấy: '))
+    category_id = list_category_id[lua_chon_cate - 1]
+    LOGGER.info(category_id)
+
+    # Lấy các sản phẩm đang sale tương ứng
     url_lay_tat_ca = 'https://shopee.vn/api/v2/flash_sale/get_all_itemids' \
         f'?need_personalize=true&promotionid={promotion_id}&sort_soldout=true'
-    url_thong_tin_shop = 'https://shopee.vn/api/v4/product/get_shop_info?' \
-        f'shopid={shop_id}'
-    shop_id = 131666219
 
-    script_lay_item = r'''
+    response = requests.get(url_lay_tat_ca)
+    response = json.loads(response.content.decode('utf-8'))
+    danh_sach_san_pham = response.get('data').get('item_brief_list')
+    danh_sach_san_pham_id = []
+    for san_pham in danh_sach_san_pham:
+        danh_sach_san_pham_id.append(san_pham.get('itemid'))
+    LOGGER.info('Tìm thấy %d sản phẩm', len(danh_sach_san_pham))
+
+    # Đọc script
+    with open('script.js', 'r') as tep_js:
+        script_lay_item = tep_js.read()
+    script_header = '''
     promoId = %s;
     catId = %s;
     filterLocation = '%s';
     itemId = %s;
-    return fetch(
-    "https://shopee.vn/api/v2/flash_sale/flash_sale_batch_get_items", {
-      "headers": {
-        "accept": "application/json",
-        "accept-language": "vi",
-        "content-type": "application/json",
-        "if-none-match-": "55b03-c9b9fb25684b2b06733c64898f2b3197",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "x-api-source": "rweb",
-        "x-csrftoken": "A0O24HgbOXbamkLtd1BV8OVFrcXOwzjY",
-        "x-kl-ajax-request": "Ajax_Request",
-        "x-requested-with": "XMLHttpRequest",
-        "x-shopee-language": "vi"
-      },
-      "referrer": "https://shopee.vn/flash_sale?categoryId="+catId+"&promotionId="+promoId,
-      "referrerPolicy": "no-referrer-when-downgrade",
-      "body": "{\"promotionid\":"+promoId+",\"categoryid\":"+catId+",\"itemids\":["+itemId+"],\"sort_soldout\":false,\"limit\":1,\"need_personalize\":true,\"with_dp_items\":true}",
-      "method": "POST",
-      "mode": "cors",
-      "credentials": "include"
-    }).then(res => res.json());
     '''
 
-    # Đọc tệp js
-    with open('script.js', 'r') as tep_js:
-        promoId = list_promotion_id[lua_chon - 1][-1]
-        catId = 12
-        filterLocation = 'TP. Hồ Chí Minh'
-        itemId = 11009435571
-        script = tep_js.read()
-        script = script % (
-            promoId,
-            catId,
-            filterLocation,
-        )
-    LOGGER.info(script)
+    # Lấy danh sách sản phẩm ở khu vực cần tìm
+    danh_sach_san_pham_o_gan = []
 
-    # Chạy script
-    result = driver.execute_script(script_lay_item % (
-            promoId,
-            catId,
+    for itemId in danh_sach_san_pham_id:
+        LOGGER.info(
+            '%s - %s - %s - %s',
+            promotion_id,
+            category_id,
             filterLocation,
             itemId,
-    ))
-    LOGGER.info(result)
+        )
+        # Lấy thông tin sản phẩm
+        script_lay_item = script_header % (
+            promotion_id,
+            category_id,
+            filterLocation,
+            itemId,
+        ) + script_lay_item
+        thong_tin_san_pham = driver.execute_script(script_lay_item)
+        thong_tin_san_pham = thong_tin_san_pham.get('data').get('items')[0]
+        ten_san_pham = thong_tin_san_pham.get('name')
+        dang_giam_gia = thong_tin_san_pham.get('discount')
+
+        # Lấy thông tin shop
+        shop_id = thong_tin_san_pham.get('shopid')
+        url_thong_tin_shop = 'https://shopee.vn/api/v4/product/get_shop_info?' \
+            f'shopid={shop_id}'
+        response = requests.get(url_thong_tin_shop)
+        response = json.loads(response.content.decode('utf-8'))
+        thong_tin_shop = response.get('data')
+        dia_chi = thong_tin_shop.get('place')
+        # Kiểm tra location có trong địa chỉ thì lấy ra
+        if filterLocation.lower() in dia_chi.lower():
+            # Tạo đường dẫn sản phẩm và thêm vào danh sách
+            url_san_pham = 'https://shopee.vn/--i.{shop_id}.{itemId}'
+            danh_sach_san_pham_o_gan.append([
+                ten_san_pham,
+                dang_giam_gia,
+                url_san_pham])
     return driver
 
 
