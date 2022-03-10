@@ -244,9 +244,9 @@ def lay_sales(driver, url):
             # Tạo đường dẫn sản phẩm và thêm vào danh sách
             url_san_pham = f'https://shopee.vn/--i.{shop_id}.{itemId}'
             danh_sach_san_pham_o_gan.append([
-                ten_san_pham,
-                dang_giam_gia,
-                url_san_pham])
+                str(ten_san_pham),
+                str(dang_giam_gia),
+                str(url_san_pham)])
 
     # Hiển thị sản phẩm tìm được
     LOGGER.info(
