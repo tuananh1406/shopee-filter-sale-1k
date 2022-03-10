@@ -1,25 +1,7 @@
 # Auto filter sale 1K gần bạn
 ## Project fork lại của 1 bạn trên facebook
 Info: https://github.com/KangHidro/shopee-filter-sale-1k
-
-## Tại sao lại có cái này?
-
-Đôi khi bạn sẽ nhận được (hoặc săn được) voucher freeship đơn 0đ của shopee (10k hoặc 25k), và phí ship chỉ rẻ nhất khi bạn mua những sản phẩm trong <ins>**cùng tỉnh thành**</ins> hoặc <ins>**từ nước ngoài**</ins>, vậy nên script này ra đời để lọc ra các sản phẩm đó để lựa cho nhanh, đỡ mất thời gian lướt rồi coi phí ship 😂
-
-## Không cần đăng nhập!
-
-## Hướng dẫn sử dụng
-
-1. Truy cập trang Flash sale: https://shopee.vn/flash_sale
-2. Click chọn khung giờ và chọn mục "Đồng giá 1k" (Hoặc bất kỳ mục nào bạn muốn lọc 😂 nó chỉ khác nhau cái `categoryId` và `promotionId` thui)
-3. Nhìn trên thanh địa chỉ sẽ có dạng `https://shopee.vn/flash_sale?categoryId=12&promotionId=2039645794`, hãy copy `categoryId` và `promotionId`
-4. Tìm tên tỉnh thành của bạn theo danh sách bên dưới cùng, copy đúng kể cả dấu chấm phẩy nhé! Đây sẽ là `filterLocation`
-5. Quay lại trang web shopee bấm F12 và mở Console
-6. Copy và Paste script vào Console, khoan Enter vội, hãy thay lại `categoryId`, `promotionId` và `filterLocation`
-7. Chờ tầm 3-5s để nó load
-8. Paste dòng này trực tiếp vào Console: `copy(itemInfo.join("\n\n"))`
-9. Mở notepad lên và Paste thành quả
-10. Nếu paste bước 9 không ra gì thì chắc không có sale nào rồi, bạn thử lại với khung giờ khác xem sao nhé 😂
+Link bài viết gốc: https://www.facebook.com/100002590375840/videos/360086205971659/
 
 ## Danh sách tỉnh thành
 
