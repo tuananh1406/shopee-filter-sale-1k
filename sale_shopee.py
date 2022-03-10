@@ -238,6 +238,9 @@ def lay_sales(driver, url):
         response = requests.get(url_thong_tin_shop)
         response = json.loads(response.content.decode('utf-8'))
         thong_tin_shop = response.get('data')
+        if thong_tin_shop is None:
+            LOGGER.info(response.url)
+            continue
         dia_chi = thong_tin_shop.get('place')
         # Kiểm tra location có trong địa chỉ thì lấy ra
         if filterLocation.lower() in dia_chi.lower():
