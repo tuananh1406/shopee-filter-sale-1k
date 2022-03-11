@@ -1,7 +1,18 @@
 # Auto filter sale 1K gần bạn
 ## Project fork lại của 1 bạn trên facebook
-Info: https://github.com/KangHidro/shopee-filter-sale-1k
-Link bài viết gốc: https://www.facebook.com/100002590375840/videos/360086205971659/
+- Info: https://github.com/KangHidro/shopee-filter-sale-1k
+- Link bài viết gốc: https://www.facebook.com/100002590375840/videos/360086205971659/
+
+## Hướng dẫn cài
+- Cài đặt python:
+  - Vào trang https://www.python.org/downloads/release/python-388/
+  - Tìm bản 'Windows installer' và tải về
+  - Đổi tên file vừa tải về thành python.exe (nếu không có đuôi .exe thì để
+    python cũng được)
+  - Copy vào thư mục code này và chạy cat_dat_python.bat
+  - Xong chạy setup.bat
+- Cài firefox, muốn dùng cái khác thì tự chỉnh tay trong code (Nếu biết làm)
+- Chạy python sale_shopee.py và làm theo hướng dẫn.
 
 ## Danh sách tỉnh thành
 
